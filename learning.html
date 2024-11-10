@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Display</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            padding-top:3.5em;
+        }
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        #result img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+        }
+        ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar {
+    width: 100%;
+    background-color: #333;
+     /* 10px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    
+}
+.navbar .logo {
+    font-size: 1.5em;
+    padding-left: 1.25em; /* 20px */
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.25em; /* 20px */
+    padding-right: 1.25em; /* 20px */
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5em 0.9375em; /* 8px 15px */
+    transition: background 0.3s ease, color 0.3s ease;
+    font-size: 1em;
+    border-radius: 0.25em; /* 4px */
+}
+
+.nav-links a:hover {
+    background-color: #555;
+    color: #ffdd57;
+}
+.logo1 {
+    color: red;
+  }
+  
+  .logo2 {
+    color: #00a2ff;
+  }
+  
+  .logo3 {
+    color: #428000;
+  }
+  label{
+    font-weight:600;
+  }
+  .container h1{
+    text-align:center;
+  }
+
+  .container h1 span{
+    color:green;
+  }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+          <span class="logo1">A</span><span class="logo2">S</span
+          ><span class="logo3">L</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="Aboutus.html">About us</a></li>
+          <li><a href="Translator.html">Translator</a></li>
+          <li><a href="learning.html">Learning</a></li>
+        </ul>
+      </nav>
+    <div class="container">
+        <h1>Image Display from <span>Mongo</span>DB</h1>
+        <form id="image-form">
+            <div class="input-group">
+                <label for="choice">Choose an option:</label><br>
+                <input type="radio" id="alphabet" name="choice" value="A" required> Image by Alphabet<br>
+                <input type="radio" id="number" name="choice" value="N"> Random Image by Number<br>
+            </div>
+            <div class="input-group" id="alphabet-input" style="display:none;">
+                <label for="alphabet-input">Enter Alphabet:</label>
+                <input type="text" id="alphabet-value" name="alphabet" placeholder="Enter an alphabet">
+            </div>
+            <div class="input-group" id="number-input" style="display:none;">
+                <label for="label-number">Enter Label Number:</label>
+                <input type="number" id="label-number" name="label_number" placeholder="Enter a label number">
+            </div>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        $('input[type=radio][name=choice]').change(function() {
+            if (this.value == 'A') {
+                $('#alphabet-input').show();
+                $('#number-input').hide();
+            } else if (this.value == 'N') {
+                $('#number-input').show();
+                $('#alphabet-input').hide();
+            }
+        });
+
+        $('#image-form').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+            
+            $.ajax({
+                type: 'POST',
+                url: '/get_image',
+                data: formData,
+                success: function(response) {
+                    if (response.error) {
+                        $('#result').html(`<p>Error: ${response.error}</p>`);
+                    } else {
+                        $('#result').html(`
+                            <p>Image Label: ${response.image_label}</p>
+                            <img src="data:image/png;base64,${response.image_data}" alt="Image">
+                        `);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
